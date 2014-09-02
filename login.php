@@ -1,13 +1,34 @@
 <?php
 
+/**
+ * Class Login
+ */
 class Login{
 
+	/**
+	 * @var string
+	 */
 	private $username = 'Admin';
+	/**
+	 * @var string
+	 */
 	private $password = 'Password';
+	/**
+	 * @var
+	 */
 	private $inputUsername;
+	/**
+	 * @var bool
+	 */
 	private $isLoggedIn = false;
+	/**
+	 * @var string
+	 */
 	private $error = '';
 
+	/**
+	 *
+	 */
 	public function __construct(){
 		if(isset($_GET['logout'])){
 			$this->logout();
@@ -15,10 +36,16 @@ class Login{
 		$this->isLoggedIn();
 	}
 
+	/**
+	 *
+	 */
 	private function setCookie(){
 		setcookie('login', $this->secureStorage($this->username.$this->password));
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function hasCookie(){
 		if(isset($_COOKIE['login'])){
 			if($_COOKIE['login'] == $this->secureStorage($this->username.$this->password)){
@@ -32,14 +59,24 @@ class Login{
 		return false;
 	}
 
+	/**
+	 *
+	 */
 	private function setSession(){
 		$_SESSION['login'] = $this->secureStorage($this->username.$this->password.$_SERVER['HTTP_USER_AGENT']);
 	}
 
+	/**
+	 * @param $input
+	 * @return string
+	 */
 	private function secureStorage($input){
 		return md5($input);
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function hasSession(){
 		if(isset($_SESSION['login'])){
 			if($_SESSION['login'] == $this->secureStorage($this->username.$this->password.$_SERVER['HTTP_USER_AGENT'])){
@@ -50,6 +87,9 @@ class Login{
 		return false;
 	}
 
+	/**
+	 *
+	 */
 	private function logout(){
 		if(isset($_SESSION['login'])) {
 			unset($_SESSION['login']);
@@ -62,6 +102,9 @@ class Login{
 		}
 	}
 
+	/**
+	 *
+	 */
 	private function isLoggedIn(){
 		if(!$this->hasCookie() && !$this->hasSession()){
 			if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username'] != '' && $_POST['password'] != '') {
@@ -91,6 +134,9 @@ class Login{
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function renderHtml(){
 		?>
 			<!doctype html>
