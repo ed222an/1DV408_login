@@ -33,7 +33,7 @@ class Login{
 	}
 
 	private function setSession(){
-		$_SESSION['login'] = $this->secureStorage($this->username.$this->password);
+		$_SESSION['login'] = $this->secureStorage($this->username.$this->password.$_SERVER['HTTP_USER_AGENT']);
 	}
 
 	private function secureStorage($input){
@@ -42,7 +42,7 @@ class Login{
 
 	private function hasSession(){
 		if(isset($_SESSION['login'])){
-			if($_SESSION['login'] == $this->secureStorage($this->username.$this->password)){
+			if($_SESSION['login'] == $this->secureStorage($this->username.$this->password.$_SERVER['HTTP_USER_AGENT'])){
 				return true;
 			}
 			unset($_SESSION['login']);
@@ -123,8 +123,8 @@ class Login{
 			<?php
 		}else{
 			?>
-			<h2>Admin är inloggad</h2>
-			<p><?php echo $this->error; ?></p>
+				<h2>Admin är inloggad</h2>
+				<p><?php echo $this->error; ?></p>
 				<a href="./?logout">Logga ut</a>
 			<?php
 		}
