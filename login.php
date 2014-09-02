@@ -92,6 +92,17 @@ class Login{
 	}
 
 	public function renderHtml(){
+		?>
+			<!doctype html>
+			<html>
+			<head>
+				<meta charset="utf-8">
+				<meta name="description" content="">
+				<meta name="viewport" content="width=device-width, initial-scale=1">
+				<title>Laborationskod ds222hz</title>
+			</head>
+			<body>
+		<?php
 		echo '<h1>Laborationskod ds222hz</h1>';
 		if(!$this->isLoggedIn) {
 			?>
@@ -117,6 +128,10 @@ class Login{
 				<a href="./?logout">Logga ut</a>
 			<?php
 		}
+		?>
+				</body>
+			</html>
+		<?php
 	}
 
 }
