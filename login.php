@@ -6,7 +6,7 @@ class Login{
 	private $password = 'Password';
 	private $inputUsername;
 	private $isLoggedIn = false;
-	private $error;
+	private $error = '';
 
 	public function __construct(){
 		if(isset($_GET['logout'])){
@@ -16,7 +16,7 @@ class Login{
 	}
 
 	private function setCookie(){
-		$_COOKIE['login'] = $this->secureStorage($this->username.$this->password);
+		setcookie('login', $this->secureStorage($this->username.$this->password));
 	}
 
 	private function hasCookie(){
@@ -41,9 +41,8 @@ class Login{
 		if(isset($_SESSION['login'])){
 			if($_SESSION['login'] == $this->secureStorage($this->username.$this->password)){
 				return true;
-			}else {
-				unset($_SESSION['login']);
 			}
+			unset($_SESSION['login']);
 		}
 		return false;
 	}
@@ -96,7 +95,7 @@ class Login{
 			<?php
 		}else{
 			?>
-				<a href="./?logout=">Logga ut</a>
+				<a href="./?logout">Logga ut</a>
 			<?php
 		}
 	}
