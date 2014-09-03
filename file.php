@@ -2,6 +2,8 @@
 
 /**
  * Class File
+ * fil hanteringen hittade jag på:
+ * http://davidwalsh.name/basic-php-file-handling-create-open-read-write-append-close-delete
  */
 class File{
 	/**
