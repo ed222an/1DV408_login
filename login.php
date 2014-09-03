@@ -24,7 +24,7 @@ class Login{
 	/**
 	 * @var string
 	 */
-	private $error = '';
+	private $message = '';
 
 	/**
 	 *
@@ -50,12 +50,12 @@ class Login{
 	private function hasCookie(){
 		if(isset($_COOKIE['login'])){
 			if($_COOKIE['login'] == $this->secureStorage($this->username.$this->password)){
-				$this->error = 'Inloggning lyckades via cookies';
+				$this->message = 'Inloggning lyckades via cookies';
 				return true;
 			}
 			unset($_COOKIE['login']);
 			setcookie('login', '', time() - 3600);
-			$this->error = 'Felaktig information i cookie';
+			$this->message = 'Felaktig information i cookie';
 		}
 		return false;
 	}
@@ -95,7 +95,7 @@ class Login{
 		if(isset($_SESSION['login'])) {
 			unset($_SESSION['login']);
 			session_destroy();
-			$this->error = 'Du har nu loggat ut';
+			$this->message = 'Du har nu loggat ut';
 		}
 		if(isset($_COOKIE['login'])) {
 			unset($_COOKIE['login']);
@@ -113,20 +113,20 @@ class Login{
 				if($_POST['username'] == $this->username && $this->password == $_POST['password']) {
 					$this->setSession();
 					$this->isLoggedIn = true;
-					$this->error = 'Inloggning lyckades';
+					$this->message = 'Inloggning lyckades';
 					if (isset($_POST['cookie'])) {
 						$this->setCookie();
-						$this->error = 'Inloggning lyckades och vi kommer ihåg dig nästa gång';
+						$this->message = 'Inloggning lyckades och vi kommer ihåg dig nästa gång';
 					}
 				}else{
-					$this->error = 'Felaktigt användarnamn och/eller lösenord';
+					$this->message = 'Felaktigt användarnamn och/eller lösenord';
 				}
 			}else{
 				if(isset($_POST['username']) && $_POST['username'] == '') {
-					$this->error = 'Användarnamn saknas';
+					$this->message = 'Användarnamn saknas';
 				}
 				if(isset($_POST['password']) && $_POST['password'] == '') {
-					$this->error = 'Lösenord saknas';
+					$this->message = 'Lösenord saknas';
 				}
 
 			}
@@ -157,7 +157,7 @@ class Login{
 				<form action="./" METHOD="post">
 					<fieldset>
 						<legend>Login - skriv in användarnamn och lösenord</legend>
-						<?php echo '<p>' . $this->error . '</p>'; ?>
+						<?php echo '<p>' . $this->message . '</p>'; ?>
 						<label for="username">Användarnamn:</label>
 						<input type="text" name="username" id="username" value="<?php echo $this->inputUsername; ?>"/>
 						<label for="password">Lösenord:</label>
@@ -171,7 +171,7 @@ class Login{
 		}else{
 			?>
 				<h2>Admin är inloggad</h2>
-				<p><?php echo $this->error; ?></p>
+				<p><?php echo $this->message; ?></p>
 				<a href="./?logout">Logga ut</a>
 			<?php
 		}
