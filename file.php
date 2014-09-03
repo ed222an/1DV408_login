@@ -48,6 +48,7 @@ class File{
 			$data = explode('.', $data);
 			unset($data[count($data) - 1]);
 		}
+		fclose($handle);
 		return $data;
 	}
 
