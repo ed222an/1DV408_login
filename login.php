@@ -1,5 +1,7 @@
 <?php
 
+require_once('file.php');
+
 /**
  * Class Login
  */
@@ -26,10 +28,14 @@ class Login{
 	 */
 	private $message = '';
 
+	private $file;
+
 	/**
 	 *
 	 */
 	public function __construct(){
+		$this->file = new File();
+		$this->file->createFile();
 		session_start();
 		if(isset($_GET['logout'])){
 			$this->logout();
@@ -41,7 +47,12 @@ class Login{
 	 *
 	 */
 	private function setCookie(){
-		setcookie('login', $this->secureStorage($this->username.$this->password));
+		$time = strtotime('+2 minutes', strtotime(date('Y-m-d H:i:s')));
+		$onePass = md5('');
+		$CookieString =  $onePass.'/'.$time;
+		$this->file->checkrows();
+		$this->file->write($CookieString);
+		setcookie('login', $CookieString, $time);
 	}
 
 	/**
@@ -49,8 +60,10 @@ class Login{
 	 */
 	private function hasCookie(){
 		if(isset($_COOKIE['login'])){
-			if($_COOKIE['login'] == $this->secureStorage($this->username.$this->password)){
-				$this->message = 'Inloggning lyckades via cookies';
+			if($this->file->cookieIsOk($_COOKIE['login'])){
+				if(!isset($_SESSION['login'])) {
+					$this->message = 'Inloggning lyckades via cookies';
+				}
 				return true;
 			}
 			unset($_COOKIE['login']);
@@ -108,8 +121,10 @@ class Login{
 	 */
 	private function isLoggedIn(){
 		if(!$this->hasCookie() && !$this->hasSession()){
-			if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username'] != '' && $_POST['password'] != '') {
+			if(isset($_POST['username'])){
 				$this->inputUsername = $_POST['username'];
+			}
+			if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username'] != '' && $_POST['password'] != '') {
 				if($_POST['username'] == $this->username && $this->password == $_POST['password']) {
 					$this->setSession();
 					$this->isLoggedIn = true;
@@ -124,9 +139,10 @@ class Login{
 			}else{
 				if(isset($_POST['username']) && $_POST['username'] == '') {
 					$this->message = 'Användarnamn saknas';
-				}
-				if(isset($_POST['password']) && $_POST['password'] == '') {
-					$this->message = 'Lösenord saknas';
+				}else {
+					if (isset($_POST['password']) && $_POST['password'] == '') {
+						$this->message = 'Lösenord saknas';
+					}
 				}
 
 			}
@@ -176,7 +192,7 @@ class Login{
 				<a href="./?logout">Logga ut</a>
 			<?php
 		}
-		echo ucfirst(strftime('%A')).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('h:i:s').']';
+		echo '<p>'.ucfirst(strftime('%A')).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('h:i:s').']</p>';
 		?>
 				</body>
 			</html>
