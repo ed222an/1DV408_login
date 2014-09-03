@@ -1,8 +1,18 @@
 <?php
 
+/**
+ * Class File
+ */
 class File{
+	/**
+	 * @var string
+	 */
 	private $file = 'file.txt';
 
+	/**
+	 * @param $data
+	 * @param bool $new
+	 */
 	public function write($data, $new = false){
 		if($new){
 			$handle = fopen($this->file, 'w');
@@ -15,6 +25,9 @@ class File{
 		fclose($handle);
 	}
 
+	/**
+	 *
+	 */
 	public function createFile(){
 		if(!file_exists($this->file)) {
 			$handle = fopen($this->file, 'w');
@@ -24,6 +37,9 @@ class File{
 		}
 	}
 
+	/**
+	 * @return array|string
+	 */
 	private function getData(){
 		$handle = fopen($this->file, 'r');
 		$data = array();
@@ -35,6 +51,9 @@ class File{
 		return $data;
 	}
 
+	/**
+	 *
+	 */
 	public function checkrows(){
 		$data = $this->getData();
 		$SaveData = array();
@@ -52,6 +71,10 @@ class File{
 		}
 	}
 
+	/**
+	 * @param $cookieValue
+	 * @return bool
+	 */
 	public function cookieIsOk($cookieValue){
 		$data = $this->getData();
 		for($i = 0; $i < count($data); $i++){

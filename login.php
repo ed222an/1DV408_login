@@ -192,7 +192,7 @@ class Login{
 				<a href="./?logout">Logga ut</a>
 			<?php
 		}
-		echo '<p>'.ucfirst(strftime('%A')).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('h:i:s').']</p>';
+		echo '<p>'.ucfirst(strftime('%A')).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('H:i:s').']</p>';
 		?>
 				</body>
 			</html>
