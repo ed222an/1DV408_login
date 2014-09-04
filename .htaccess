@@ -1,0 +1,7 @@
+# byggt med hjälp av: https://www.youtube.com/watch?v=6reEBParHzQ
+RewriteEngine On
+RewriteBase /login/
+RewriteCond %{REQUEST_FILE} !=F
+RewriteCond %{REQUEST_FILE} !=D
+
+RewriteRule ^(.+)$ index.php?uri=$1 [QSA,L]

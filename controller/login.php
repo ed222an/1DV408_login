@@ -1,6 +1,6 @@
 <?php
 
-require_once('file.php');
+require_once('controller/file.php');
 
 /**
  * Class Login
@@ -16,18 +16,13 @@ class Login{
 	 */
 	private $password = 'Password';
 	/**
-	 * @var
-	 */
-	private $inputUsername;
-	/**
-	 * @var bool
-	 */
-	private $isLoggedIn = false;
-	/**
 	 * @var string
 	 */
-	private $message = '';
+	public $message = '';
 
+	/**
+	 * @var File
+	 */
 	private $file;
 
 	/**
@@ -40,7 +35,6 @@ class Login{
 		if(isset($_GET['logout'])){
 			$this->logout();
 		}
-		$this->isLoggedIn();
 	}
 
 	/**
@@ -119,20 +113,17 @@ class Login{
 	/**
 	 *
 	 */
-	private function isLoggedIn(){
+	public function isLoggedIn(){
 		if(!$this->hasCookie() && !$this->hasSession()){
-			if(isset($_POST['username'])){
-				$this->inputUsername = $_POST['username'];
-			}
 			if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username'] != '' && $_POST['password'] != '') {
 				if($_POST['username'] == $this->username && $this->password == $_POST['password']) {
 					$this->setSession();
-					$this->isLoggedIn = true;
 					$this->message = 'Inloggning lyckades';
 					if (isset($_POST['cookie'])) {
 						$this->setCookie();
 						$this->message = 'Inloggning lyckades och vi kommer ihåg dig nästa gång';
 					}
+					return true;
 				}else{
 					$this->message = 'Felaktigt användarnamn och/eller lösenord';
 				}
@@ -147,56 +138,9 @@ class Login{
 
 			}
 		}else{
-			$this->isLoggedIn = true;
+			return true;
 		}
-	}
-
-	/**
-	 *
-	 */
-	public function renderHtml(){
-		setlocale(LC_ALL, 'swedish');
-		?>
-			<!doctype html>
-			<html>
-			<head>
-				<meta charset="utf-8">
-				<meta name="description" content="">
-				<meta name="viewport" content="width=device-width, initial-scale=1">
-				<title>Laborationskod ds222hz</title>
-			</head>
-			<body>
-		<?php
-		echo '<h1>Laborationskod ds222hz</h1>';
-		if(!$this->isLoggedIn) {
-			?>
-				<h2>Ej Inloggad</h2>
-				<form action="./" METHOD="post">
-					<fieldset>
-						<legend>Login - skriv in användarnamn och lösenord</legend>
-						<?php echo '<p>' . $this->message . '</p>'; ?>
-						<label for="username">Användarnamn:</label>
-						<input type="text" name="username" id="username" value="<?php echo $this->inputUsername; ?>"/>
-						<label for="password">Lösenord:</label>
-						<input type="password" name="password" id="password"/>
-						<label for="cookie">Håll mig inloggad:</label>
-						<input type="checkbox" id="cookie" name="cookie" value="yes"/>
-						<input type="submit" value="Logga in"/>
-					</fieldset>
-				</form>
-			<?php
-		}else{
-			?>
-				<h2>Admin är inloggad</h2>
-				<p><?php echo $this->message; ?></p>
-				<a href="./?logout">Logga ut</a>
-			<?php
-		}
-		echo '<p>'.ucfirst(strftime('%A')).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('H:i:s').']</p>';
-		?>
-				</body>
-			</html>
-		<?php
+		return false;
 	}
 
 }
