@@ -155,6 +155,7 @@ class Login{
 	 *
 	 */
 	public function renderHtml(){
+		header('Content-type: text/plain; charset=utf-8');
 		setlocale(LC_ALL, 'swedish');
 		?>
 			<!doctype html>
@@ -192,7 +193,7 @@ class Login{
 				<a href="./?logout">Logga ut</a>
 			<?php
 		}
-		echo '<p>'.ucfirst(strftime('%A')).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('H:i:s').']</p>';
+		echo '<p>'.ucfirst(utf8_encode(strftime('%A'))).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('H:i:s').']</p>';
 		?>
 				</body>
 			</html>
