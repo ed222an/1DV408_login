@@ -1,7 +1,7 @@
 <?php
 
 require_once('controller/file.php');
-require_once('../vendor/MessageBox.php');
+require_once('./vendor/MessageBox.php');
 
 /**
  * Class Login
