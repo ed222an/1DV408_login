@@ -35,7 +35,7 @@ class loginView extends View{
 			<form action="./LoggedIn" METHOD="post">
 				<fieldset>
 					<legend>Login - skriv in användarnamn och lösenord</legend>
-					<?php echo '<p>' . $this->Controller->message . '</p>'; ?>
+					<?php echo '<p>' . $this->Controller->getMessage() . '</p>'; ?>
 					<label for="username">Användarnamn:</label>
 					<input type="text" name="username" id="username" value="<?php echo $inputUsername; ?>"/>
 					<label for="password">Lösenord:</label>
@@ -59,7 +59,7 @@ class loginView extends View{
 		$this->header('Laborationskod ds222hz');
 		?>
 			<h2>Admin är inloggad</h2>
-			<p><?php echo $this->Controller->message; ?></p>
+			<p><?php echo $this->Controller->getMessage(); ?></p>
 			<a href="./?logout">Logga ut</a>
 		<?php
 		$this->footer();
