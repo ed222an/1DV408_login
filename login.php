@@ -155,7 +155,6 @@ class Login{
 	 *
 	 */
 	public function renderHtml(){
-		header('Content-type: text/plain; charset=utf-8');
 		setlocale(LC_ALL, 'swedish');
 		?>
 			<!doctype html>
