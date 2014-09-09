@@ -28,7 +28,7 @@ class View{
 	 */
 	public function footer(){
 		setlocale(LC_ALL, 'swedish');
-		echo '<p>'.ucfirst(strftime('%A')).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('H:i:s').']</p>';
+		echo '<p>'.ucfirst(utf8_encode(strftime('%A'))).', den '.date('j ').ucfirst(strftime('%B')).' år '.date('Y').'. Klockan är ['.date('H:i:s').']</p>';
 		?>
 			</body>
 			</html>
