@@ -1,6 +1,7 @@
 <?php
 
 require_once('controller/file.php');
+require_once('../vendor/MessageBox.php');
 
 /**
  * Class Login
@@ -16,25 +17,32 @@ class Login{
 	 */
 	private $password = 'Password';
 	/**
-	 * @var string
-	 */
-	public $message = '';
-
-	/**
 	 * @var File
 	 */
 	private $file;
+	/**
+	 * @var MessageBox
+	 */
+	private $messageBox;
 
 	/**
 	 *
 	 */
 	public function __construct(){
 		$this->file = new File();
+		$this->messageBox = new MessageBox();
 		$this->file->createFile();
 		session_start();
 		if(isset($_GET['logout'])){
 			$this->logout();
 		}
+	}
+
+	/**
+	 *
+	 */
+	public function getMessage(){
+		return $this->messageBox->get();
 	}
 
 	/**
@@ -56,13 +64,13 @@ class Login{
 		if(isset($_COOKIE['login'])){
 			if($this->file->cookieIsOk($_COOKIE['login'])){
 				if(!isset($_SESSION['login'])) {
-					$this->message = 'Inloggning lyckades via cookies';
+					$this->messageBox->set('Inloggning lyckades via cookies');
 				}
 				return true;
 			}
 			unset($_COOKIE['login']);
 			setcookie('login', '', time() - 3600);
-			$this->message = 'Felaktig information i cookie';
+			$this->messageBox->set('Felaktig information i cookie');
 		}
 		return false;
 	}
@@ -102,7 +110,7 @@ class Login{
 		if(isset($_SESSION['login'])) {
 			unset($_SESSION['login']);
 			session_destroy();
-			$this->message = 'Du har nu loggat ut';
+			$this->messageBox->set('Du har nu loggat ut');
 		}
 		if(isset($_COOKIE['login'])) {
 			unset($_COOKIE['login']);
@@ -118,21 +126,21 @@ class Login{
 			if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username'] != '' && $_POST['password'] != '') {
 				if($_POST['username'] == $this->username && $this->password == $_POST['password']) {
 					$this->setSession();
-					$this->message = 'Inloggning lyckades';
+					$this->messageBox->set('Inloggning lyckades');
 					if (isset($_POST['cookie'])) {
 						$this->setCookie();
-						$this->message = 'Inloggning lyckades och vi kommer ihåg dig nästa gång';
+						$this->messageBox->set('Inloggning lyckades och vi kommer ihåg dig nästa gång');
 					}
 					return true;
 				}else{
-					$this->message = 'Felaktigt användarnamn och/eller lösenord';
+					$this->messageBox->set('Felaktigt användarnamn och/eller lösenord');
 				}
 			}else{
 				if(isset($_POST['username']) && $_POST['username'] == '') {
-					$this->message = 'Användarnamn saknas';
+					$this->messageBox->set('Användarnamn saknas');
 				}else {
 					if (isset($_POST['password']) && $_POST['password'] == '') {
-						$this->message = 'Lösenord saknas';
+						$this->messageBox->set('Lösenord saknas');
 					}
 				}
 
