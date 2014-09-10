@@ -54,10 +54,10 @@ class Login{
 					$this->messageBox->set('Felaktigt användarnamn och/eller lösenord');
 				}
 			}else{
-				if(!$this->hasValue($username)) {
+				if(isset($username) && $username == '' ) {
 					$this->messageBox->set('Användarnamn saknas');
 				}else {
-					if (!$this->hasValue($password)) {
+					if (isset($password) && $password == '') {
 						$this->messageBox->set('Lösenord saknas');
 					}
 				}
