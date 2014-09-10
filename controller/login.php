@@ -21,7 +21,7 @@ class Login{
 		$this->messageBox = new MessageBox();
 		$this->model = new LoginModel();
 		if(isset($_GET['logout'])){
-			$this->logout();
+			$this->messageBox->set($this->model->logout());
 		}
 	}
 
@@ -32,28 +32,32 @@ class Login{
 		return $this->messageBox->get();
 	}
 
+	private function hasValue($input){
+		return isset($input) && $input != '';
+	}
+
 	/**
 	 *
 	 */
 	public function isLoggedIn(){
+		$username = isset($_POST['username']) ? $_POST['username'] : "";
+		$password = isset($_POST['password']) ? $_POST['password'] : "";
+		$cookie = isset($_POST['cookie']) ? $_POST['cookie'] : null;
+
 		if(!$this->model->hasCookie($this->messageBox) && !$this->model->hasSession()){
-			if(isset($_POST['username']) && isset($_POST['password']) && $_POST['username'] != '' && $_POST['password'] != '') {
-				if($_POST['username'] == $this->username && $this->password == $_POST['password']) {
-					$this->model->setSession();
-					$this->messageBox->set('Inloggning lyckades');
-					if (isset($_POST['cookie'])) {
-						$this->model->setCookie();
-						$this->messageBox->set('Inloggning lyckades och vi kommer ihåg dig nästa gång');
-					}
+			if($this->hasValue($username) && $this->hasValue($password)) {
+				$login = $this->model->login($username, $password, $cookie);
+				if($login) {
+					$this->messageBox->set($login);
 					return true;
 				}else{
 					$this->messageBox->set('Felaktigt användarnamn och/eller lösenord');
 				}
 			}else{
-				if(isset($_POST['username']) && $_POST['username'] == '') {
+				if(!$this->hasValue($username)) {
 					$this->messageBox->set('Användarnamn saknas');
 				}else {
-					if (isset($_POST['password']) && $_POST['password'] == '') {
+					if (!$this->hasValue($password)) {
 						$this->messageBox->set('Lösenord saknas');
 					}
 				}

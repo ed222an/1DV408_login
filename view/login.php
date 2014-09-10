@@ -23,16 +23,14 @@ class loginView extends View{
 	 *
 	 */
 	public function index(){
-		$inputUsername = '';
-		if(isset($_POST['username'])){
-			$inputUsername = $_POST['username'];
-		}
+		$inputUsername = isset($_POST['username']) ? $_POST['username'] : '';
+
 		if($this->Controller->isLoggedIn()){
 			header('Location: ./LoggedIn');
 		}
 		$this->header('Laborationskod ds222hz');
 		?>
-			<form action="./LoggedIn" METHOD="post">
+			<form action="" METHOD="post">
 				<fieldset>
 					<legend>Login - skriv in användarnamn och lösenord</legend>
 					<?php echo '<p>' . $this->Controller->getMessage() . '</p>'; ?>

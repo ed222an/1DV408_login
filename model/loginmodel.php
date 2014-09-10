@@ -68,15 +68,28 @@ class LoginModel{
 	 *
 	 */
 	public function logout(){
-		if(isset($_SESSION[$this->sessioncookie])) {
-			unset($_SESSION[$this->sessioncookie]);
-			session_destroy();
-			$this->messageBox->set('Du har nu loggat ut');
-		}
 		if(isset($_COOKIE[$this->sessioncookie])) {
 			unset($_COOKIE[$this->sessioncookie]);
 			setcookie($this->sessioncookie, '', time() - 3600);
 		}
+		if(isset($_SESSION[$this->sessioncookie])) {
+			unset($_SESSION[$this->sessioncookie]);
+			session_destroy();
+			return 'Du har nu loggat ut';
+		}
+		return '';
+	}
+
+	public function login($username, $password, $cookie){
+		if($username == $this->username && $this->password == $password) {
+			$this->setSession();
+			if(isset($cookie)) {
+				$this->setCookie();
+				return 'Inloggning lyckades och vi kommer ihåg dig nästa gång';
+			}
+			return 'Inloggning lyckades';
+		}
+		return false;
 	}
 
 	public function hasCookie($messageBox){
