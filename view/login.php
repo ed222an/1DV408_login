@@ -9,14 +9,11 @@ require_once('./vendor/MessageBox.php');
  */
 class loginView extends View{
 
-	private $Controller;
-
 	private $model;
 
 	private $messageBox;
 
 	public function __construct(){
-		$this->Controller = new Login();
 		$this->model = new LoginModel();
 		$this->messageBox = new MessageBox();
 	}
@@ -39,9 +36,9 @@ class loginView extends View{
 	}
 
 	public function hasCookie(){
-		if(isset($_COOKIE[$this->sessioncookie])){
-			if($this->model->cookieIsOk($this->sessioncookie)){
-				if(!isset($_SESSION[$this->sessioncookie])) {
+		if(isset($_COOKIE[$this->model->sessioncookie])){
+			if($this->model->cookieIsOk($this->model->sessioncookie)){
+				if(!isset($_SESSION[$this->model->sessioncookie])) {
 					$this->messageBox->set('Inloggning lyckades via cookies');
 				}
 				return true;
@@ -59,7 +56,7 @@ class loginView extends View{
 			<form action="" METHOD="post">
 				<fieldset>
 					<legend>Login - skriv in användarnamn och lösenord</legend>
-					<?php echo '<p>' . $message . '</p>'; ?>
+					<?php echo '<p>' . $this->messageBox->get() . '</p>'; ?>
 					<label for="username">Användarnamn:</label>
 					<input type="text" name="username" id="username" value="<?php echo $this->getUsername(); ?>"/>
 					<label for="password">Lösenord:</label>
@@ -77,16 +74,16 @@ class loginView extends View{
 		$this->header('Laborationskod ds222hz');
 		?>
 			<h2>Admin är inloggad</h2>
-			<p><?php echo $message; ?></p>
+			<p><?php echo $this->messageBox->get(); ?></p>
 			<a href="./?logout">Logga ut</a>
 		<?php
 		$this->footer();
 	}
 
 	private function deleteCookie(){
-		if(isset($_COOKIE[$this->sessioncookie])) {
-			unset($_COOKIE[$this->sessioncookie]);
-			setcookie($this->sessioncookie, '', time() - 3600);
+		if(isset($_COOKIE[$this->model->sessioncookie])) {
+			unset($_COOKIE[$this->model->sessioncookie]);
+			setcookie($this->model->sessioncookie, '', time() - 3600);
 		}
 	}
 
@@ -96,7 +93,6 @@ class loginView extends View{
 			$this->messageBox->set('Du har nu loggat ut');
 		}
 	}
-
 
 	public function show($isLoggedIn){
 		if(isset($_GET['logout'])){
@@ -112,9 +108,9 @@ class loginView extends View{
 			$this->loggedIn();
 		}else{
 			if(isset($_POST['login'])){
-				if($this->username == '') {
+				if($this->getUsername() == '') {
 					$this->messageBox->set('Användarnamn saknas');
-				} else if($this -> password == '') {
+				} else if($this->getPassword() == '') {
 					$this->messageBox->set('Lösenord saknas');
 				}else{
 					$this->messageBox->set('Felaktigt användarnamn och/eller lösenord');
