@@ -5,7 +5,8 @@ class MessageBox{
 	private $key = "message";
 
 	public function set($value){
-		setcookie( $this->key, $value, -1);
+		setcookie( $this->key, $value, 3600);
+		$_COOKIE[$this->key] = $value;
 	}
 
 	public function get(){
@@ -16,6 +17,7 @@ class MessageBox{
 		}
 
 		setcookie($this->key, "", time() -1);
+		unset($_COOKIE[$this->key]);
 
 		return $message;
 	}

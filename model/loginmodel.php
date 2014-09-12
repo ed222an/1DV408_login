@@ -12,7 +12,7 @@ class LoginModel{
 	 */
 	private $password = 'Password';
 
-	private $sessioncookie = 'login';
+	public $sessioncookie = 'davidlogin';
 	/**
 	 * @var File
 	 */
@@ -21,19 +21,17 @@ class LoginModel{
 	public function __construct(){
 		$this->file = new File();
 		$this->file->createFile();
-		session_start();
 	}
 
 	/**
 	 *
 	 */
-	public function setCookie(){
-		$time = strtotime('+2 minutes', strtotime(date('Y-m-d H:i:s')));
+	public function setCookie($time){
 		$onePass = md5('');
 		$CookieString =  $onePass.'/'.$time;
 		$this->file->checkrows();
 		$this->file->write($CookieString);
-		setcookie($this->sessioncookie, $CookieString, $time);
+		return $CookieString;
 	}
 
 	/**
@@ -54,7 +52,7 @@ class LoginModel{
 	/**
 	 * @return bool
 	 */
-	public function hasSession(){
+	public function isLoggedIn(){
 		if(isset($_SESSION[$this->sessioncookie])){
 			if($_SESSION[$this->sessioncookie] == $this->secureStorage($this->username.$this->password.$_SERVER['HTTP_USER_AGENT'])){
 				return true;
@@ -68,42 +66,23 @@ class LoginModel{
 	 *
 	 */
 	public function logout(){
-		if(isset($_COOKIE[$this->sessioncookie])) {
-			unset($_COOKIE[$this->sessioncookie]);
-			setcookie($this->sessioncookie, '', time() - 3600);
-		}
 		if(isset($_SESSION[$this->sessioncookie])) {
 			unset($_SESSION[$this->sessioncookie]);
 			session_destroy();
-			return 'Du har nu loggat ut';
+			return true;
 		}
-		return '';
+		return false;
 	}
 
-	public function login($username, $password, $cookie){
+	public function login($username, $password){
 		if($username == $this->username && $this->password == $password) {
 			$this->setSession();
-			if(isset($cookie)) {
-				$this->setCookie();
-				return 'Inloggning lyckades och vi kommer ihåg dig nästa gång';
-			}
-			return 'Inloggning lyckades';
+			return true;
 		}
 		return false;
 	}
 
-	public function hasCookie($messageBox){
-		if(isset($_COOKIE[$this->sessioncookie])){
-			if($this->file->cookieIsOk($_COOKIE['login'])){
-				if(!isset($_SESSION[$this->sessioncookie])) {
-					$messageBox->set('Inloggning lyckades via cookies');
-				}
-				return true;
-			}
-			unset($_COOKIE[$this->sessioncookie]);
-			setcookie($this->sessioncookie, '', time() - 3600);
-			$messageBox->set('Felaktig information i cookie');
-		}
-		return false;
+	public function cookieIsOk($cookie){
+		return $this->file->cookieIsOk($cookie);
 	}
 }
