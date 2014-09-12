@@ -20,7 +20,6 @@ class LoginModel{
 
 	public function __construct(){
 		$this->file = new File();
-		$this->file->createFile();
 	}
 
 	/**
