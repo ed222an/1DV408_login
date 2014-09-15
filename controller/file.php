@@ -2,8 +2,6 @@
 
 /**
  * Class File
- * fil hanteringen hittade jag på:
- * http://davidwalsh.name/basic-php-file-handling-create-open-read-write-append-close-delete
  */
 class File{
 	/**
@@ -15,19 +13,42 @@ class File{
 	 * @param $data
 	 * @param bool $new
 	 */
-	public function write($data){
-		$handle = fopen($this->file, 'a');
+	public function write($data, $new = false){
+		if($new){
+			$handle = fopen($this->file, 'w');
+		}else {
+			$handle = fopen($this->file, 'a');
+		}
 		if($data != '') {
 			fwrite($handle, $data . '.');
 		}
+		fclose($handle);
 	}
 
+	/**
+	 *
+	 */
+	public function createFile(){
+		if(!file_exists($this->file)) {
+			$handle = fopen($this->file, 'w');
+			fclose($handle);
+		}else{
+			$this->checkrows();
+		}
+	}
+
+	/**
+	 * @return array|string
+	 */
 	private function getData(){
-		$data = @file($this->file);
-		if($data != false) {
+		$handle = fopen($this->file, 'r');
+		$data = array();
+		if((filesize($this->file))) {
+			$data = fread($handle, filesize($this->file));
 			$data = explode('.', $data);
 			unset($data[count($data) - 1]);
 		}
+		fclose($handle);
 		return $data;
 	}
 
@@ -47,7 +68,7 @@ class File{
 		}
 		$SaveData = implode('.', $SaveData);
 		if($SaveData != '.') {
-			$this->write($SaveData);
+			$this->write($SaveData, true);
 		}
 	}
 
@@ -64,8 +85,5 @@ class File{
 		}
 		return false;
 	}
-
-
-
 
 }

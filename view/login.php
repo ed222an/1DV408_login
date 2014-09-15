@@ -65,23 +65,24 @@ class loginView extends View{
 	 */
 	public function hasCookie(){
 		if(isset($_COOKIE[$this->model->sessioncookie])){
-			if($this->model->cookieIsOk($this->model->sessioncookie)){
+			if($this->model->cookieIsOk($_COOKIE[$this->model->sessioncookie])){
 				if(!isset($_SESSION[$this->model->sessioncookie])) {
 					$this->messageBox->set('Inloggning lyckades via cookies');
+					$this->model->setSession();
 				}
 				return true;
 			}
-			unset($_COOKIE[$this->sessioncookie]);
-			setcookie($this->sessioncookie, '', time() - 3600);
+			unset($_COOKIE[$this->model->sessioncookie]);
+			setcookie($this->model->sessioncookie, '', time() - 3600);
 			$this->messageBox->set('Felaktig information i cookie');
 		}
 		return false;
 	}
 
 	/**
-	 * @param string $message
+	 *
 	 */
-	private function index($message = ""){
+	private function index(){
 		$this->header('Laborationskod ds222hz');
 		?>
 			<h2>Ej inloggad</h2>
@@ -103,9 +104,9 @@ class loginView extends View{
 	}
 
 	/**
-	 * @param string $message
+	 *
 	 */
-	private function loggedIn($message = "") {
+	private function loggedIn() {
 		$this->header('Laborationskod ds222hz');
 		?>
 			<h2>Admin är inloggad</h2>
