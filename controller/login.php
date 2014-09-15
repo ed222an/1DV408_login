@@ -7,21 +7,36 @@ require_once('./view/login.php');
  */
 class Login{
 
+	/**
+	 * @var LoginModel
+	 */
 	private $model;
 
+	/**
+	 * @var loginView
+	 */
 	private $view;
 
+	/**
+	 *
+	 */
 	public function __construct(){
 		$this->model = new LoginModel();
 		$this->view = new loginView();
 	}
 
+	/**
+	 *
+	 */
 	public function dotoggle(){
-		$isLoggedin = false;
-		if(!$this->model->isLoggedIn()){
+		$isLoggedin = $this->model->isLoggedIn();
+		if(!$isLoggedin){
 			$username = $this->view->getUsername();
 			$password = $this->view->getPassword();
 			$isLoggedin = $this->model->login($username, $password);
+		}
+		if($this->view->getLogout()){
+			$isLoggedin = false;
 		}
 
 		$this->view->show($isLoggedin);

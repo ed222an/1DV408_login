@@ -2,6 +2,9 @@
 
 require_once('./controller/file.php');
 
+/**
+ * Class LoginModel
+ */
 class LoginModel{
 	/**
 	 * @var string
@@ -12,12 +15,18 @@ class LoginModel{
 	 */
 	private $password = 'Password';
 
+	/**
+	 * @var string
+	 */
 	public $sessioncookie = 'davidlogin';
 	/**
 	 * @var File
 	 */
 	private $file;
 
+	/**
+	 *
+	 */
 	public function __construct(){
 		$this->file = new File();
 	}
@@ -73,6 +82,11 @@ class LoginModel{
 		return false;
 	}
 
+	/**
+	 * @param $username
+	 * @param $password
+	 * @return bool
+	 */
 	public function login($username, $password){
 		if($username == $this->username && $this->password == $password) {
 			$this->setSession();
@@ -81,6 +95,10 @@ class LoginModel{
 		return false;
 	}
 
+	/**
+	 * @param $cookie
+	 * @return bool
+	 */
 	public function cookieIsOk($cookie){
 		return $this->file->cookieIsOk($cookie);
 	}

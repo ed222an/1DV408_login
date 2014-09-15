@@ -9,25 +9,50 @@ require_once('./vendor/MessageBox.php');
  */
 class loginView extends View{
 
+	/**
+	 * @var LoginModel
+	 */
 	private $model;
 
+	/**
+	 * @var MessageBox
+	 */
 	private $messageBox;
 
+	/**
+	 *
+	 */
 	public function __construct(){
 		$this->model = new LoginModel();
 		$this->messageBox = new MessageBox();
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getUsername(){
 		$username = isset($_POST['username']) ? $_POST['username'] : "";
 		return $username;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getPassword(){
 		$password = isset($_POST['password']) ? $_POST['password'] : "";
 		return $password;
 	}
 
+	/**
+	 * @return bool
+	 */
+	public function getLogout(){
+		return isset($_GET['logout']);
+	}
+
+	/**
+	 *
+	 */
 	public function setCookie(){
 		$time = strtotime('+2 minutes', strtotime(date('Y-m-d H:i:s')));
 		$content = $this->model->setCookie($time);
@@ -35,6 +60,9 @@ class loginView extends View{
 		$_COOKIE[$this->model->sessioncookie] = $content;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function hasCookie(){
 		if(isset($_COOKIE[$this->model->sessioncookie])){
 			if($this->model->cookieIsOk($this->model->sessioncookie)){
@@ -50,10 +78,14 @@ class loginView extends View{
 		return false;
 	}
 
+	/**
+	 * @param string $message
+	 */
 	private function index($message = ""){
 		$this->header('Laborationskod ds222hz');
 		?>
-			<form action="" METHOD="post">
+			<h2>Ej inloggad</h2>
+			<form action="./" METHOD="post">
 				<fieldset>
 					<legend>Login - skriv in användarnamn och lösenord</legend>
 					<?php echo '<p>' . $this->messageBox->get() . '</p>'; ?>
@@ -70,6 +102,9 @@ class loginView extends View{
 		$this->footer();
 	}
 
+	/**
+	 * @param string $message
+	 */
 	private function loggedIn($message = "") {
 		$this->header('Laborationskod ds222hz');
 		?>
@@ -80,6 +115,9 @@ class loginView extends View{
 		$this->footer();
 	}
 
+	/**
+	 *
+	 */
 	private function deleteCookie(){
 		if(isset($_COOKIE[$this->model->sessioncookie])) {
 			unset($_COOKIE[$this->model->sessioncookie]);
@@ -87,6 +125,9 @@ class loginView extends View{
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function logout(){
 		$this->deleteCookie();
 		if($this->model->logout()){
@@ -94,8 +135,11 @@ class loginView extends View{
 		}
 	}
 
+	/**
+	 * @param $isLoggedIn
+	 */
 	public function show($isLoggedIn){
-		if(isset($_GET['logout'])){
+		if($this->getLogout()){
 			$this->logout();
 		}
 		if($isLoggedIn || $this->hasCookie()){
@@ -103,7 +147,9 @@ class loginView extends View{
 				$this->setCookie();
 				$this->messageBox->set('Inloggning lyckades och vi kommer ihåg dig nästa gång');
 			}else{
-				$this->messageBox->set('Inloggning lyckades');
+				if(isset($_POST['login'])) {
+					$this->messageBox->set('Inloggning lyckades');
+				}
 			}
 			$this->loggedIn();
 		}else{
