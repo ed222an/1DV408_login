@@ -66,7 +66,7 @@ class loginView extends View{
 	public function hasCookie(){
 		if(isset($_COOKIE[$this->model->sessioncookie])){
 			if($this->model->cookieIsOk($_COOKIE[$this->model->sessioncookie])){
-				if(!isset($_SESSION[$this->model->sessioncookie])) {
+				if(!$this->model->sessionIsset()){
 					$this->messageBox->set('Inloggning lyckades via cookies');
 					$this->model->setSession();
 				}

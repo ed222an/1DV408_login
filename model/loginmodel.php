@@ -49,6 +49,10 @@ class LoginModel{
 		$_SESSION[$this->sessioncookie] = $this->secureStorage($this->username.$this->password.$_SERVER['HTTP_USER_AGENT']);
 	}
 
+	public function sessionIsset(){
+		return isset($_SESSION[$this->sessioncookie]);
+	}
+
 	/**
 	 * @param $input
 	 * @return string
