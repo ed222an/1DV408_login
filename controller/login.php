@@ -1,45 +1,42 @@
 <?php
 require_once('./model/loginmodel.php');
 require_once('./view/login.php');
+require_once('./view/registerView.php');
 
-/**
- * Class Login
- */
 class Login{
 
-	/**
-	 * @var LoginModel
-	 */
-	private $model;
+	private $loginModel;
+	private $loginView;
+	private $registerView;
 
-	/**
-	 * @var loginView
-	 */
-	private $view;
-
-	/**
-	 *
-	 */
 	public function __construct(){
-		$this->model = new LoginModel();
-		$this->view = new loginView();
+		$this->loginModel = new LoginModel();
+		$this->loginView = new loginView();
+		$this->registerView = new RegisterView();
 	}
 
-	/**
-	 *
-	 */
 	public function dotoggle(){
-		$isLoggedin = $this->model->isLoggedIn();
-		if(!$isLoggedin){
-			$username = $this->view->getUsername();
-			$password = $this->view->getPassword();
-			$isLoggedin = $this->model->login($username, $password);
+			
+		// Har användaren klickat på registrerarknappen, eller om "register" är med i url-en visas registreringssidan.
+		if($this->loginView->getRegister())
+		{
+			$this->registerView->validateUserInput();
 		}
-		if($this->view->getLogout()){
-			$isLoggedin = false;
+		
+		// Annars visas den vanliga inloggningssidan.
+		else
+		{
+			$isLoggedin = $this->loginModel->isLoggedIn();
+			if(!$isLoggedin){
+				$username = $this->loginView->getUsername();
+				$password = $this->loginView->getPassword();
+				$isLoggedin = $this->loginModel->login($username, $password);
+			}
+			if($this->loginView->getLogout()){
+				$isLoggedin = false;
+			}
+	
+			$this->loginView->show($isLoggedin);
 		}
-
-		$this->view->show($isLoggedin);
 	}
-
 }

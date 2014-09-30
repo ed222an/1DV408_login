@@ -49,6 +49,11 @@ class loginView extends View{
 	public function getLogout(){
 		return isset($_GET['logout']);
 	}
+	
+	public function getRegister()
+	{
+		return isset($_GET['register']);
+	}
 
 	/**
 	 *
@@ -85,6 +90,7 @@ class loginView extends View{
 	private function index(){
 		$this->header('Laborationskod ds222hz');
 		?>
+			<a href="./?register">Registrera ny användare</a>
 			<h2>Ej inloggad</h2>
 			<form action="./" METHOD="post">
 				<fieldset>
