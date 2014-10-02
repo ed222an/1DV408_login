@@ -31,7 +31,7 @@ class RegisterView extends View
 					?>
 					<div>
 						<label for="requestedUsername">Namn: </label>
-						<input type="text" name="requestedUsername" id="requestedUsername" value=""/>
+						<input type="text" name="requestedUsername" id="requestedUsername" value="<?php echo $this->getUsername(); ?>"/>
 					</div>
 					<div>
 						<label for="requestedPassword">Lösenord: </label>
@@ -54,8 +54,8 @@ class RegisterView extends View
 	// Validerar användarinput.
 	public function validateUserInput()
 	{
-		$usernameValidated = false;
-		$passwordValidated = false;
+		$usernameValidated = FALSE;
+		$passwordValidated = FALSE;
 		
 		// Har "Registrera-knappen tryckts på valideras användarinput."
 		if(isset($_POST['registerButton']) == TRUE)
@@ -68,8 +68,17 @@ class RegisterView extends View
 			}
 			else
 			{
-				// Användarnamnet är validerat.
-				$usernameValidated = true;
+				// Kontrollera ifall användarnamnet är upptaget.
+				if($this->registerModel->compareNewUserNameWithList($_POST['requestedUsername']))
+				{
+					// Visar felmeddelande.
+					array_push($this->messages, "Användarnamnet är redan upptaget");
+				}
+				else
+				{
+					// Användarnamnet är validerat.
+					$usernameValidated = TRUE;
+				}
 			}
 			
 			// Kontrollerar lösenordet.
@@ -89,7 +98,7 @@ class RegisterView extends View
 				else
 				{
 					// Lösenordet är validerat.
-					$passwordValidated = true;
+					$passwordValidated = TRUE;
 				}
 			}
 			
@@ -97,13 +106,18 @@ class RegisterView extends View
 			if($usernameValidated == TRUE && $passwordValidated == TRUE)
 			{
 				//...spara den nya användaren.
-				echo "VALIDERAT OCH KLART! :D";
-				
-				// TODO FIXA SÅ ATT VALIDERAT ANVÄNDARNAMN VISAS I FÄLTET OM INTE LÖSENORDET GÅR IGENOM.
+				$this->registerModel->saveNewUser($_POST['requestedUsername'], $_POST['requestedPassword']);
 			}
 		}
 		
+		// Visa registreringssidan.
 		$this->showRegistrationPage();
+	}
+	
+	// Hämtar användarnamnet ur $_POST-arrayen.
+	public function getUsername()
+	{		
+		return $username = isset($_POST['requestedUsername']) ? $_POST['requestedUsername'] : "";
 	}
 }
 ?>
