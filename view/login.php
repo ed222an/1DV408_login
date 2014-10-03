@@ -4,24 +4,11 @@ require_once('controller/login.php');
 require_once('model/loginmodel.php');
 require_once('./vendor/MessageBox.php');
 
-/**
- * Class loginView
- */
-class loginView extends View{
-
-	/**
-	 * @var LoginModel
-	 */
+class loginView extends View
+{
 	private $model;
-
-	/**
-	 * @var MessageBox
-	 */
 	private $messageBox;
-
-	/**
-	 *
-	 */
+	
 	public function __construct(){
 		$this->model = new LoginModel();
 		$this->messageBox = new MessageBox();
@@ -65,15 +52,16 @@ class loginView extends View{
 	{
 		return isset($_GET['register']);
 	}
-
-	/**
-	 *
-	 */
+	
 	public function setCookie(){
 		$time = strtotime('+2 minutes', strtotime(date('Y-m-d H:i:s')));
 		$content = $this->model->setCookie($time);
 		setcookie($this->model->sessioncookie, $content, $time);
 		$_COOKIE[$this->model->sessioncookie] = $content;
+		
+		$username = $this->getUsername();
+		$cookieExpirationTime = time()+60*60*24*30;
+		setcookie("Username", $username, $cookieExpirationTime);
 	}
 
 	/**
@@ -94,10 +82,7 @@ class loginView extends View{
 		}
 		return false;
 	}
-
-	/**
-	 *
-	 */
+	
 	private function index($newlyRegisteredUser = FALSE){
 		$this->header('Laborationskod ds222hz');
 		?>
@@ -126,23 +111,35 @@ class loginView extends View{
 		<?php
 		$this->footer();
 	}
-
-	/**
-	 *
-	 */
+	
 	private function loggedIn() {
 		$this->header('Laborationskod ds222hz');
+		
+		$username = '';
+		if($this->model->getLoggedInUser() != NULL)
+		{
+			$username = $this->model->getLoggedInUser();
+		}
+		
+		if($this->getUsername() != NULL)
+		{
+			$username = $this->model->getLoggedInUser();
+		}
+		
+		if(isset($_COOKIE['Username']) && $_COOKIE['Username'] != NULL)
+		{
+			$username = $_COOKIE['Username'];
+		}
+		
+		
 		?>
-			<h2>Admin är inloggad</h2>
+			<h2><?php echo $username; ?> är inloggad</h2>
 			<p><?php echo $this->messageBox->get(); ?></p>
 			<a href="./?logout">Logga ut</a>
 		<?php
 		$this->footer();
 	}
-
-	/**
-	 *
-	 */
+	
 	private function deleteCookie(){
 		if(isset($_COOKIE[$this->model->sessioncookie])) {
 			unset($_COOKIE[$this->model->sessioncookie]);
@@ -150,9 +147,6 @@ class loginView extends View{
 		}
 	}
 
-	/**
-	 *
-	 */
 	public function logout(){
 		$this->deleteCookie();
 		if($this->model->logout()){
