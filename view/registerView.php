@@ -54,6 +54,7 @@ class RegisterView extends View
 	// Validerar användarinput.
 	public function validateUserInput()
 	{
+		$regexString = '/^[A-Za-z][A-Za-z0-9]{2,31}$/';
 		$usernameValidated = FALSE;
 		$passwordValidated = FALSE;
 		
@@ -64,20 +65,36 @@ class RegisterView extends View
 			if(isset($_POST['requestedUsername']) == FALSE || $_POST['requestedUsername'] == '' || strlen($_POST['requestedUsername']) < 3)
 			{
 				// Visar felmeddelande.
-				array_push($this->messages, "Användarnamnet har för få tecken. Minst 3 tecken");
+				array_push($this->messages, "Användarnamnet har för få tecken. Minst 3 tecken.");
 			}
 			else
 			{
-				// Kontrollera ifall användarnamnet är upptaget.
-				if($this->registerModel->compareNewUserNameWithList($_POST['requestedUsername']))
+				// Kontrollerar om användarnamnet innehåller otillåtna tecken.
+				if(!preg_match($regexString, $_POST['requestedUsername']))
 				{
+					// Tar bort de otillåtna tecknen.
+					$_POST['requestedUsername'] = strip_tags($_POST['requestedUsername']);
+					
 					// Visar felmeddelande.
-					array_push($this->messages, "Användarnamnet är redan upptaget");
+					array_push($this->messages, "Användarnamnet innehåller ogiltiga tecken.");
+					
+					// Visa registreringssidan.
+					$this->showRegistrationPage();
+					return FALSE;
 				}
 				else
 				{
-					// Användarnamnet är validerat.
-					$usernameValidated = TRUE;
+					// Kontrollera ifall användarnamnet är upptaget.
+					if($this->registerModel->userExists($_POST['requestedUsername']))
+					{
+						// Visar felmeddelande.
+						array_push($this->messages, "Användarnamnet är redan upptaget");
+					}
+					else
+					{
+						// Användarnamnet är validerat.
+						$usernameValidated = TRUE;
+					}
 				}
 			}
 			
@@ -85,7 +102,7 @@ class RegisterView extends View
 			if(isset($_POST['requestedPassword']) == FALSE || $_POST['requestedPassword'] == '' || strlen($_POST['requestedPassword']) < 6)
 			{
 				// Visar felmeddelande.
-				array_push($this->messages, "Lösenordet har för få tecken. Minst 6 tecken");
+				array_push($this->messages, "Lösenordet har för få tecken. Minst 6 tecken.");
 			}
 			else
 			{
@@ -93,7 +110,7 @@ class RegisterView extends View
 				if(isset($_POST['repeatedRequestedPassword']) == FALSE || $_POST['repeatedRequestedPassword'] != $_POST['requestedPassword'])
 				{
 					// Visar felmeddelande.
-					array_push($this->messages, "Lösenorden matchar inte");
+					array_push($this->messages, "Lösenorden matchar inte.");
 				}
 				else
 				{
@@ -102,16 +119,22 @@ class RegisterView extends View
 				}
 			}
 			
-			// Om både användarnamnet och lösenordet är validerat...
+			// Om både användarnamnet och lösenordet är validerat returnerar metoden TRUE.
 			if($usernameValidated == TRUE && $passwordValidated == TRUE)
 			{
-				//...spara den nya användaren.
-				$this->registerModel->saveNewUser($_POST['requestedUsername'], $_POST['requestedPassword']);
+				return TRUE;
 			}
 		}
 		
 		// Visa registreringssidan.
 		$this->showRegistrationPage();
+		return FALSE;
+	}
+
+	public function saveNewUser()
+	{
+		//...spara den nya användaren.
+		$this->registerModel->saveUserToFile($_POST['requestedUsername'], $_POST['requestedPassword']);
 	}
 	
 	// Hämtar användarnamnet ur $_POST-arrayen.

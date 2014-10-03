@@ -2,60 +2,80 @@
 
 class RegisterModel
 {
-	// Arrayer för de lagrade användarnamnen & lösenorden.
-	private $storedUsernames = array();
-	private $storedPasswords = array();
+	private $textFileName = 'userRegistry.txt';
 	
 	public function __construct()
 	{
-		//$this->storedUsernames = $fileWithData;
-		//$this->storedPasswords = $fileWithData;
+		
 	}
 	
 	// Returnerar TRUE om det nya användarnamnet redan finns i listan av registrerade användare.
-	public function compareNewUserNameWithList($newUsername)
+	public function userExists($newUsername)
 	{
-		if(in_array($newUsername, $this->storedUsernames))
+		// Kontrollerar ifall filen finns.
+		if($this->checkForFile($this->textFileName))
 		{
-			return TRUE;
+			// Bryter ut alla användare vid ny rad.
+			$file = file_get_contents($this->textFileName);
+			$result = explode(PHP_EOL, $file);
+			
+			foreach($result as $user)
+			{
+				// Bryter ut användarnamn och lösenord vid semikolon.
+				$userAndPassword = explode(";", $user);
+				
+				// Kontrollerar ifall användarnamnet är detsamma som det nya användarnamnet.
+				if($userAndPassword[0] == $newUsername)
+				{
+					return TRUE;
+				}
+			}
 		}
 		
 		return FALSE;
 	}
 	
+	// Söker efter given fil.
+	public function checkForFile($fileName)
+	{
+		if(file_exists($fileName) == TRUE)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;	
+	}
+	
 	// Sparar den nya användaren i textfilen med användare.
-	public function saveNewUser($newUsername, $newPassword)
+	public function saveUserToFile($newUsername, $newPassword)
 	{
 		$stringToSave = $newUsername . ";" . $newPassword . PHP_EOL;
 
 		// Finns inte filen, skapa den och spara den nya informationen.
-		if(file_exists('userRegistry.txt') == FALSE)
+		if($this->checkForFile($this->textFileName) == FALSE)
 		{
-			$this->createNewTextFile($stringToSave, 'userRegistry');
+			$this->createNewFile($stringToSave, $this->textFileName);
 		}
 		else
-		{
-			// Hämta filens namn.
-			$file = 'userRegistry.txt';
-			
+		{	
 			// Hämta innehållet.
-			$current = file_get_contents($file);
+			$current = file_get_contents($this->textFileName);
 			
 			// Lägg till den nya informationen längst bak i filen.
 			$current .= $stringToSave;
-			file_put_contents($file, $current);
+			file_put_contents($this->textFileName, $current);
 		}
 	}
 	
 	// Skapar en fil på servern som innehåller det medskickade objektets värden.
-	public function createNewTextFile($value, $fileName)
+	public function createNewFile($value, $fileName)
 	{
-		// Skapar och öppnar en textfil.
-		$file = fopen($fileName . ".txt", "w") or die("Unable to open file!");
+		// Skapar och öppnar en fil.
+		$file = fopen($fileName, "w") or die("Unable to open file!");
 		
 		fwrite($file, $value);
 		
-		// Stänger textfilen.
+		// Stänger filen.
 		fclose($file);
 	}
 }

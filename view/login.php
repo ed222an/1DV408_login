@@ -30,8 +30,19 @@ class loginView extends View{
 	/**
 	 * @return string
 	 */
-	public function getUsername(){
-		$username = isset($_POST['username']) ? $_POST['username'] : "";
+	public function getUsername($userHasRegistered = FALSE)
+	{
+		// Har användaren precis registrerats...
+		if($userHasRegistered === TRUE)
+		{
+			// Skicka med det nya användarnamnet.
+			$username = $_POST['requestedUsername'];
+		}
+		else
+		{
+			$username = isset($_POST['username']) ? $_POST['username'] : "";
+		}
+		
 		return $username;
 	}
 
@@ -87,7 +98,7 @@ class loginView extends View{
 	/**
 	 *
 	 */
-	private function index(){
+	private function index($newlyRegisteredUser = FALSE){
 		$this->header('Laborationskod ds222hz');
 		?>
 			<a href="./?register">Registrera ny användare</a>
@@ -97,7 +108,14 @@ class loginView extends View{
 					<legend>Login - skriv in användarnamn och lösenord</legend>
 					<?php echo '<p>' . $this->messageBox->get() . '</p>'; ?>
 					<label for="username">Användarnamn:</label>
-					<input type="text" name="username" id="username" value="<?php echo $this->getUsername(); ?>"/>
+					<input type="text" name="username" id="username" value="<?php 
+					if($newlyRegisteredUser === TRUE)
+					{
+						echo $this->getUsername(TRUE);
+					}
+					else{
+						echo $this->getUsername();
+					} ?>"/>
 					<label for="password">Lösenord:</label>
 					<input type="password" name="password" id="password"/>
 					<label for="cookie">Håll mig inloggad:</label>
@@ -145,7 +163,16 @@ class loginView extends View{
 	/**
 	 * @param $isLoggedIn
 	 */
-	public function show($isLoggedIn){
+	public function show($isLoggedIn, $newlyRegisteredUser = FALSE){
+		
+		// Visar den nyregistrerade användarens namn i användarnamnsfältet & skriver ut rättmeddelande.
+		if($newlyRegisteredUser === TRUE)
+		{
+			$this->messageBox->set('Registrering av ny användare lyckades.');
+			$this->index(TRUE);
+			return TRUE;
+		}
+			
 		if($this->getLogout()){
 			$this->logout();
 		}

@@ -8,6 +8,7 @@ class Login{
 	private $loginModel;
 	private $loginView;
 	private $registerView;
+	private $userHasRegistered = FALSE;
 
 	public function __construct(){
 		$this->loginModel = new LoginModel();
@@ -16,27 +17,44 @@ class Login{
 	}
 
 	public function dotoggle(){
-			
-		// Har användaren klickat på registrerarknappen, eller om "register" är med i url-en visas registreringssidan.
-		if($this->loginView->getRegister())
-		{
-			$this->registerView->validateUserInput();
-		}
 		
-		// Annars visas den vanliga inloggningssidan.
+		// Har användaren klickat på registrerarknappen, eller om "register" är med i url-en visas registreringssidan.
+		if($this->loginView->getRegister() && $this->userHasRegistered === FALSE)
+		{
+			// Validera användarens input.
+			if($this->registerView->validateUserInput())
+			{
+				// Spara den nya användaren.
+				$this->registerView->saveNewUser();
+				
+				// Användare har registrerats, visa inloggningssidan.
+				$this->userHasRegistered = TRUE;
+				$this->dotoggle();
+			}
+		}
 		else
 		{
-			$isLoggedin = $this->loginModel->isLoggedIn();
-			if(!$isLoggedin){
-				$username = $this->loginView->getUsername();
-				$password = $this->loginView->getPassword();
-				$isLoggedin = $this->loginModel->login($username, $password);
+			// Visar den nyregistrerade användaren.
+			if($this->userHasRegistered === TRUE)
+			{
+				$this->loginView->show(FALSE, TRUE);
+				$this->userHasRegistered = FALSE;
 			}
-			if($this->loginView->getLogout()){
-				$isLoggedin = false;
+			else
+			{
+				// Visa den vanliga inloggningssidan.
+				$isLoggedin = $this->loginModel->isLoggedIn();
+				if(!$isLoggedin){
+					$username = $this->loginView->getUsername();
+					$password = $this->loginView->getPassword();
+					$isLoggedin = $this->loginModel->login($username, $password);
+				}
+				if($this->loginView->getLogout()){
+					$isLoggedin = false;
+				}
+		
+				$this->loginView->show($isLoggedin);
 			}
-	
-			$this->loginView->show($isLoggedin);
 		}
 	}
 }
