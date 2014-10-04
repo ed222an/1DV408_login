@@ -10,9 +10,14 @@ class LoginModel
 	private $filename = 'userRegistry.txt';
 	private $currentUser;
 	private $currentPassword;
+	private $sessionUserAgent;
 
-	public function __construct(){
+	public function __construct($userAgent)
+	{	
 		$this->file = new File();
+		
+		// Sparar användarens useragent i den privata variablerna.
+		$this->sessionUserAgent = $userAgent;
 		
 		// Finns registret sparas det ner i registryFile-variabeln.
 		if(file_exists($this->filename))
@@ -27,6 +32,17 @@ class LoginModel
 		$this->file->checkrows();
 		$this->file->write($CookieString);
 		return $CookieString;
+	}
+	
+	// Kontrollerar loginstatusen. Är användaren inloggad returnerar metoden true, annars false.
+	public function checkLoginStatus()
+	{
+		if(isset($_SESSION['loggedIn']) && $_SESSION['loggedIn'] === true && $_SESSION['sessionUserAgent'] === $this->sessionUserAgent)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
 	}
 
 	public function setSession(){
@@ -61,8 +77,11 @@ class LoginModel
 	}
 
 	public function logout(){
-		if(isset($_SESSION[$this->sessioncookie])) {
+		
+		if(isset($_SESSION[$this->sessioncookie]) || $this->checkLoginStatus())
+		{
 			unset($_SESSION[$this->sessioncookie]);
+			session_unset();
 			session_destroy();
 			return true;
 		}
@@ -75,7 +94,12 @@ class LoginModel
 	 * @return bool
 	 */
 	public function login($username, $password)
-	{	
+	{
+		if($this->checkLoginStatus())
+		{
+			return TRUE;
+		}
+		
 		if($this->compareInputWithFile($username, $password))
 	 	{
 			$this->setSession();
@@ -108,9 +132,14 @@ class LoginModel
 			{
 				if(isset($user[1]) && $user[1] == $inputPassword)
 				{
+					// Sparar information om den nyvarande användaren.
 					$this->currentUser = $inputUsername;
 					$this->currentPassword = $inputPassword;
+					
+					// Sparar information i sessionen.
 					$_SESSION['loggedInUser'] = $this->currentUser;
+					$_SESSION['loggedIn'] = true;
+					$_SESSION['sessionUserAgent'] = $this->sessionUserAgent;
 					return TRUE;
 				}
 			}

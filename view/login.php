@@ -9,9 +9,10 @@ class loginView extends View
 	private $model;
 	private $messageBox;
 	
-	public function __construct(){
-		$this->model = new LoginModel();
+	public function __construct(LoginModel $loginModel){
+		$this->model = $loginModel;
 		$this->messageBox = new MessageBox();
+		date_default_timezone_set('Europe/Stockholm');
 	}
 
 	/**
@@ -76,8 +77,7 @@ class loginView extends View
 				}
 				return true;
 			}
-			unset($_COOKIE[$this->model->sessioncookie]);
-			setcookie($this->model->sessioncookie, '', time() - 3600);
+			$this->deleteCookie();
 			$this->messageBox->set('Felaktig information i cookie');
 		}
 		return false;
@@ -144,6 +144,12 @@ class loginView extends View
 		if(isset($_COOKIE[$this->model->sessioncookie])) {
 			unset($_COOKIE[$this->model->sessioncookie]);
 			setcookie($this->model->sessioncookie, '', time() - 3600);
+			
+			// Tar bort övriga cookies.
+			foreach ($_COOKIE as $c_key => $c_value)
+			{
+				setcookie($c_key, NULL, 1);
+			}
 		}
 	}
 

@@ -11,8 +11,12 @@ class Login{
 	private $userHasRegistered = FALSE;
 
 	public function __construct(){
-		$this->loginModel = new LoginModel();
-		$this->loginView = new loginView();
+			
+		// Sparar ner användarens användaragent och ip. Används vid verifiering av användaren.
+		$userAgent = $_SERVER['HTTP_USER_AGENT'];
+		
+		$this->loginModel = new LoginModel($userAgent);
+		$this->loginView = new loginView($this->loginModel);
 		$this->registerView = new RegisterView();
 	}
 
